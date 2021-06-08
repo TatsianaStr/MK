@@ -2,6 +2,7 @@
 const $arenas = document.querySelector('.arenas');
 const $randomButton = document.querySelector('.button');
 
+
 const player1 = {
     name: 'Scorpion',
     player: 1,
@@ -10,7 +11,10 @@ const player1 = {
     weapon: ['knife', 'sword', 'sai'],
     attack: function(name){
         console.log(this.name +''+ '-Fight!');
-    }
+    },
+    changeHP: changeHP,
+    elHP: elHP,
+    renderCH: renderCH,
 };
 
 const player2 = {
@@ -21,7 +25,10 @@ const player2 = {
     weapon: ['knife', 'sword', 'sai'],
     attack: function(name){
         console.log(this.name +''+ '-Fight!');
-    }
+    },
+    changeHP: changeHP,
+    elHP: elHP,
+    renderCH: renderCH,
 };
 function createElement(tag, className){
     const $tag = document.createElement(tag);
@@ -53,15 +60,20 @@ function createPlayer(object){
     
      return $player1;
 }
-   function changeHP(player){
-    const $playerLife = document.querySelector('.player' + player.player + ' .life');
-    player.hp -= getRandom(20);    
-    
-    if(player.hp <= 0 ){      
-        player.hp = 0;    
-      }  
-   $playerLife.style.width = player.hp + '%';       
+function changeHP(a){ 
+          
+    this.hp -= getRandom(20);     
+    if(this.hp <= 0 ){      
+        this.hp = 0;    
+      }          
    }
+
+function elHP(){
+return document.querySelector('.player' + this.player + ' .life');
+   }
+function renderCH(){
+    this.elHP().style.width = this.hp + '%';  //рендерит поле жизни 
+}   
 
     function playerWins(name){
     const $loseTitle = createElement('div', 'loseTitle');
@@ -75,16 +87,28 @@ function createPlayer(object){
 }
 
 function getRandom(num){
-   return Math.ceil(Math.random() * num); 
+    const a =Math.ceil(Math.random() * num);
+   return  a;
 }
 
+function createReloadButton(){
+    const $reloadButton = createElement('div', 'reloadWrap');
+    const $button = createElement('button', 'button'); 
+    $button.innerHTML = "Restart";
+    $reloadButton.appendChild($button);
+    $arenas.appendChild($reloadButton);
+    $button.addEventListener('click', function(){
+        window.location.reload()
+    });
+}
 $randomButton.addEventListener('click', function(){
     console.log('####: Click Random Button'); 
-    changeHP(player1);
-    changeHP(player2);  
-
+    
+    player1.changeHP(getRandom(20));
+    player2.changeHP(getRandom(20));
      if(player1.hp === 0 || player2.hp === 0){
          $randomButton.disabled = true;
+         createReloadButton();
      }
 
      if(player1.hp === 0 && player1.hp < player2.hp ){
