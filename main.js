@@ -124,19 +124,7 @@ $randomButton.addEventListener('click', function(){
     
     
      return $player1;
-}
-//function changeHP(player){
-    //const $playerLife = document.querySelector('.player' + player.player + ' .life');
-    //player.hp -= Math.ceil(Math.random() * 20 + 1);
-    // $playerLife.style.width = player.hp + '%';
-    
-    //if(player.hp <= 0){
-    //    $arenas.appendChild(playerLose(player.name)); 
-     //   player.hp = 0; 
-    //}   
-    //   console.log(player.hp);
-      // $randonButton.disabled = true;
-   //}
+
    function changeHP(player){
     const $playerLife = document.querySelector('.player' + player.player + ' .life');
     player.hp -= Math.ceil(Math.random() * 20 + 1);
@@ -151,8 +139,7 @@ $randomButton.addEventListener('click', function(){
     else if(player2.hp<=0 && player1.hp>0){
         $arenas.appendChild(playerWin(player1.name)); 
         player2.hp = 0;
-         $randonButton.disabled = true;
-         
+         $randonButton.disabled = true;         
     } 
     else if(player2.hp<=0 && player1.hp<=0){
         $arenas.appendChild(playerDraw(player1.name, player2.name)); 
