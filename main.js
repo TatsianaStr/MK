@@ -68,7 +68,8 @@ function attack (name){
     console.log(this.name +''+ '-Fight!');
 }
 
-function changeHP(randomNumber){           
+function changeHP(randomNumber){      
+         
     this.hp -= randomNumber;     
     if(this.hp <= 0 ){      
         this.hp = 0;    
