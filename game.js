@@ -41,12 +41,10 @@ export function playerAttack(){
 
 export let playerWins = (name) => {    
     const $loseTitle = createElement('div', 'loseTitle');
-    if(name){
-        generateLogs('end', player1, player2); 
+    if(name){        
        $loseTitle.innerHTML = name + ' wins';  
     }
-    else{
-        generateLogs('draw', player1, player2); 
+    else{         
         $loseTitle.innerHTML = 'Draw'; 
     }
     return $loseTitle;
@@ -57,14 +55,17 @@ export let showResult = () => {
         $formFight.disabled = true;        
         createReloadButton();
       }
-     if(player1.hp === 0 && player1.hp < player2.hp ){
-        
+     if(player1.hp === 0 && player1.hp < player2.hp ){        
          $arenas.appendChild(playerWins(player2.name));
+         generateLogs('end', player2, player1); 
      }
      else if(player2.hp === 0 && player2.hp < player1.hp ){
        $arenas.appendChild(playerWins(player1.name));
+       generateLogs('end', player1, player2); 
      }
      else if(player1.hp === 0 && player2.hp === 0){
        $arenas.appendChild(playerWins()); 
+       generateLogs('draw');
+
     }    
 }

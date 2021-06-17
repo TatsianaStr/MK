@@ -5,14 +5,11 @@ import { showResult,enemyAttack, playerAttack } from "./game.js";
 import { generateLogs } from "./generationLogs.js";
 
 
-
-$arenas.appendChild(createPlayer(player1));
-$arenas.appendChild(createPlayer(player2));
-
-
 window.addEventListener('load', function(e){
  e.preventDefault();
    generateLogs('start', player1, player2); 
+   $arenas.appendChild(createPlayer(player1));
+  $arenas.appendChild(createPlayer(player2));  
 });
 
 $formFight.addEventListener('submit', function(e){ 
@@ -22,7 +19,7 @@ const player = playerAttack();
       if(player.defence != enemy.hit){
           player1.changeHP(enemy.value);
           player1.renderCH();
-          generateLogs('hit', player2, player1, enemy.value, player1.hp);
+          generateLogs('hit', player2, player1, enemy.value);
       } else {
           generateLogs('defence', player2, player1);
       }   
@@ -30,7 +27,7 @@ const player = playerAttack();
       if (enemy.defence != player.hit){
           player2.changeHP(player.value);
           player2.renderCH();        
-          generateLogs('hit', player1, player2, player.value, player2.hp);
+          generateLogs('hit', player1, player2, player.value);
       } 
       else {
         generateLogs('defence', player1, player2);  

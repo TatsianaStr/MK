@@ -2,7 +2,7 @@ import dateTime from "./utilsTime.js";
 import getRandom from "./utils.js";
 import { player1, player2} from "./player.js";
 const $chat =  document.querySelector('.chat');
-export function generateLogs(type, player1, player2, playerValue, playerHp){
+export function generateLogs(type, player1, player2, playerValue){
     let text;  
     let el;    
     switch (type){        
@@ -14,26 +14,26 @@ export function generateLogs(type, player1, player2, playerValue, playerHp){
             el = `<p>${text}</p>`;
             break;
         case 'hit': 
-            text = logs[type][getRandom(logs[type].length) - 1]
+            text = logs[type][getRandom(logs[type].length-1) - 1]
             .replace('[playerKick]', player1.name)
             .replace('[playerDefence]', player2.name);
-            el = `<p>${dateTime()} ${text}  -${playerValue}  ${playerHp}/100</p>`;
+            el = `<p>${dateTime()} ${text}  -${playerValue}  ${player2.hp}/100</p>`;
             break;
         case 'end':
-            text = logs[type][getRandom(logs[type].length) - 1]
+            text = logs[type][getRandom(logs[type].length-1) - 1]
             .replace('[playerWins]', player1.name)
             .replace('[playerLose]', player2.name);
             el = `<p>${text}</p>`;
             break;
         case 'defence':
              text = logs[type][getRandom(logs[type].length) - 1]
-             .replace('[playerKick]', player2.name)
-             .replace('[playerDefence]',player1.name);   
-             el = `<p>${dateTime()} ${text}</p>`;
+             .replace('[playerKick]', player1.name)
+             .replace('[playerDefence]',player2.name);   
+             el = `<p>${text}</p>`;
             break; 
          case 'draw':
              text = logs[type]
-             el = `<p>${text}</p>`;
+             el = `<p> ${dateTime()} ${text}</p>`;
              break;       
     }        
    
