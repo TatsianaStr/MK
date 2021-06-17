@@ -1,10 +1,16 @@
-export class Player{
+ 'use strict';
+ import {createElement} from "./utils.js";
+ 
+
+ class Player {
     constructor(props){
         this.name = props.name;
         this.hp = props.hp;
         this.player = props.player;
         this.img = props.img;
+        this.selector = `player${this.player}`;
         this.weapon = props.weapon;
+        this.rootSelector = props.rootSelector;
 
     }
      attack = () => {
@@ -20,29 +26,39 @@ export class Player{
        }
 
      elHP = () => {
-        return document.querySelector('.player' + this.player + ' .life');
+        return document.querySelector(`.${this.selector} .life`);// изменили
            }
         
      renderCH = () => {
             this.elHP().style.width = this.hp + '%';  //рендерит поле жизни 
         } 
+     createPlayer = () => {
+            const $player = createElement('div', this.selector); 
+             const $progressbar = createElement('div','progressbar');  
+             const $character = createElement('div','character');
+             const $life = createElement('div','life');
+             const $name = createElement('div','name');
+             const $img = createElement('img');
+        
+            $life.style.width = this.hp +'%';
+            $name.innerHTML= this.name;
+            
+             $img.src = this.img;
+           
+            $progressbar.appendChild($life);
+            $progressbar.appendChild($name);   
+           
+            $character.appendChild($img); 
+             $player.appendChild($progressbar);
+            $player.appendChild($character);  
+             
+            const $root = document.querySelector(`.${this.rootSelector}`);
+            $root.appendChild($player);
+             return $player;
+        }
 }
-export const player1 = new Player({
-    name: 'Scorpion',
-    player: 1,
-    hp: 100,
-    img:'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',   
-    weapon: ['knife', 'sword', 'sai'],
-     
-});
+export default Player;
+ 
 
-export const player2 = new Player({
-    name: 'Sub Zero',
-    player: 2,
-    hp: 100,
-    img:'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',
-    weapon: ['knife', 'sword', 'sai'],
-       
-});
 
 
