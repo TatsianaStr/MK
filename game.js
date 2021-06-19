@@ -15,8 +15,7 @@ class Game {
         name: 'Scorpion',
         player: 1,
         hp: 100,
-        img:'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',   
-        weapon: ['knife', 'sword', 'sai'],
+        img:'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',         
         rootSelector: 'arenas', 
     });
 
@@ -24,14 +23,12 @@ class Game {
         name: 'Sub Zero',
         player: 2,
         hp: 100,
-        img:'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',
-        weapon: ['knife', 'sword', 'sai'],
+        img:'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',        
         rootSelector: 'arenas',    
     }); 
     }
        start = () => {
-       // window.addEventListener = ('load', (e) => {
-       // e.preventDefault();
+       
           this.player1.createPlayer(this.player1);
           this. player2.createPlayer(this.player1);          
           this.generateLogs('start', this.player1, this.player2); 
@@ -113,10 +110,8 @@ class Game {
          else if(this.player1.hp === 0 && this.player2.hp === 0){
            this.$arenas.appendChild(this.playerWins()); 
           this.generateLogs('draw');       
-        }   
-        
-       // $button.addEventListener('click', function(){ ?????????????
-                 //   window.location.reload()}        
+        }           
+          
       } 
       createReloadButton =() => {   
       const $reloadButton = this.createReloadButton();
