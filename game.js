@@ -5,41 +5,56 @@ import dateTime from "./utilsTime.js";
 import getRandom from "./utils.js";
 import {logs, ATTACK, HIT} from "./constant.js";
 
-class Game {
-    constructor(props){     
+
+class  Game{
+    constructor(props){        
        this.$arenas = document.querySelector('.arenas');
        this.$formFight = document.querySelector('.control');
-       this.$chat =  document.querySelector('.chat');
-
-       this.player1 = new Player({
-        name: 'Scorpion',
-        player: 1,
-        hp: 100,
-        img:'http://reactmarathon-api.herokuapp.com/assets/scorpion.gif',   
-        weapon: ['knife', 'sword', 'sai'],
-        rootSelector: 'arenas', 
-    });
-
-     this.player2 = new Player({
-        name: 'Sub Zero',
-        player: 2,
-        hp: 100,
-        img:'http://reactmarathon-api.herokuapp.com/assets/subzero.gif',
-        weapon: ['knife', 'sword', 'sai'],
-        rootSelector: 'arenas',    
-    }); 
+       this.$chat =  document.querySelector('.chat');       
+       this.player1;
+       this.player2;       
     }
-       start = () => {
-       // window.addEventListener = ('load', (e) => {
-       // e.preventDefault();
-          this.player1.createPlayer(this.player1);
-          this. player2.createPlayer(this.player1);          
-          this.generateLogs('start', this.player1, this.player2); 
+       getPlayers = async() => {
+           const body = fetch('https://reactmarathon-api.herokuapp.com/api/mk/players').then(res => res.json())
+           .catch((err) =>{
+            console.log('Fetch Error:', err);
+        });           
+           return body;           
+       }
+       start = async() => {        
+           const players = await this.getPlayers();
+           console.log(players);           
+           //const p1 = players[getRandom(players.length)-1];
+           const p1 =JSON.parse(localStorage.getItem('player1'));
+           const p2 = players[getRandom(players.length)-1];
+          console.log(p1,p2);
+           this.player1 = new Player({
+             ...p1,
+              player: 1,
+             rootSelector: 'arenas',
+           });
+           this.player2 = new Player({
+            ...p2,
+            player: 2,
+            rootSelector: 'arenas',
+         });
+
+         this.player1.createPlayer();
+         this.player2.createPlayer();
+
+         this.generateLogs('start', this.player1, this.player2); 
+                     
+         this.$formFight.addEventListener  ('submit', (e) => { 
+         e.preventDefault();               
+         this.battle(); 
+         })
+        }
+
+         battle = async() =>{
               
-          this.$formFight.addEventListener  ('submit', (e) => { 
-             e.preventDefault();  
-             const { hit: hitEnemy, defence: defenceEnemy, value: valueEnemy} = this.enemyAttack();
-             const {hit, defence, value} = this.playerAttack();        
+             const fight = await this.playerAttack();
+             const { hit: hitEnemy, defence: defenceEnemy, value: valueEnemy} = fight.player1;
+             const {hit, defence, value} = fight.player2 ;     
               if(defence != hitEnemy){
                   this.player1.changeHP(valueEnemy);
                   this.player1.renderCH();
@@ -55,20 +70,18 @@ class Game {
               else {
                 this.generateLogs('defence', this.player1, this.player2);  
               }            
-            this.showResult(); 
-       });    
-            
-    }   
-
-   generateLogs = (type, player1, player2, playerValue) => {
+            this.showResult();           
+    
+}   
+       generateLogs = (type, player1, player2, playerValue) => {
         let text;  
         let el;    
         switch (type){        
             case 'start':
                 text = logs[type]
                 .replace('[time]', dateTime())
-                .replace('[player1]',player1.name)
-                .replace('[player2]',player2.name);
+                .replace('[player1]',this.player1.name)
+                .replace('[player2]',this.player2.name);
                 el = `<p>${text}</p>`;
                 break;
             case 'hit': 
@@ -103,8 +116,8 @@ class Game {
             this.createReloadButton();
           }
          if(this.player1.hp === 0 && this.player1.hp < this.player2.hp ){        
-             this.$arenas.appendChild(this.playerWins(this.player2.name));
-             this.generateLogs('end', this.player2, this.player1); 
+            this.$arenas.appendChild(this.playerWins(this.player2.name));
+            this.generateLogs('end', this.player2, this.player1); 
          }
          else if(this.player2.hp === 0 && this.player2.hp < this.player1.hp ){
            this.$arenas.appendChild(this.playerWins(this.player1.name));
@@ -112,17 +125,10 @@ class Game {
          }
          else if(this.player1.hp === 0 && this.player2.hp === 0){
            this.$arenas.appendChild(this.playerWins()); 
-          this.generateLogs('draw');       
-        }   
-        
-       // $button.addEventListener('click', function(){ ?????????????
-                 //   window.location.reload()}        
-      } 
-      createReloadButton =() => {   
-      const $reloadButton = this.createReloadButton();
-        $reloadButton.addEventListener ('click', function(){
-             window.location.reload()});
-        }
+           this.generateLogs('draw');       
+        }           
+            
+      }     
     playerWins = (name) => {    
         const $loseTitle = createElement('div', 'loseTitle');
         if(name){        
@@ -133,15 +139,18 @@ class Game {
         }
         return $loseTitle;
     }
-     createReloadButton = () => {
+     createReloadButton = () => {    
     const $reloadButton = createElement('div', 'reloadWrap');
     const $button = createElement('button', 'button'); 
     $button.innerHTML = "Restart";
-
     $reloadButton.appendChild($button);
     this.$arenas.appendChild($reloadButton);
-    return $button;   
+    $reloadButton.addEventListener ('click', function(){
+       // window.location.reload()});
+       window.location.pathname = 'index.html'});  
+    
     };
+
 
    enemyAttack = () => {
     const hit = ATTACK[getRandom(3)-1];
@@ -153,7 +162,7 @@ class Game {
         defence,
      }
  }
-   playerAttack=()=>{
+   async playerAttack() {
       const attack = {};
       for (let item of this.$formFight){ 
     
@@ -167,8 +176,20 @@ class Game {
          
           item.checked = false;            
       } 
-    return attack; 
-    }
-}
+      const response = await fetch('https://reactmarathon-api.herokuapp.com/api/mk/player/fight', {
+        method: 'POST',
+        body: JSON.stringify({
+            hit: attack.hit,
+            defence: attack.defence,
+            
+        })
+    }).then(res => res.json())
+    console.log(response);
+    console.log(response.player1);
+    console.log(response.player2);
+      return response;
+    
+      }
+    }   
 
 export default Game;
