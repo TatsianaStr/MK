@@ -4,6 +4,7 @@ import {createElement} from "./utils.js";
 import dateTime from "./utilsTime.js";
 import getRandom from "./utils.js";
 import {logs, ATTACK, HIT} from "./constant.js";
+import { switchToMainPage } from "./index.js";
 
 
 class  Game{
@@ -15,7 +16,7 @@ class  Game{
        this.player2;       
     }
        getPlayers = async() => {
-           const body = fetch('https://reactmarathon-api.herokuapp.com/api/mk/players').then(res => res.json())
+           const body = fetch('https://json.extendsclass.com/bin/13108960b152').then(res => res.json())
            .catch((err) =>{
             console.log('Fetch Error:', err);
         });           
@@ -46,33 +47,27 @@ class  Game{
                      
          this.$formFight.addEventListener  ('submit', (e) => { 
          e.preventDefault();               
-         this.battle(); 
-         })
-        }
-
-         battle = async() =>{
-              
-             const fight = await this.playerAttack();
-             const { hit: hitEnemy, defence: defenceEnemy, value: valueEnemy} = fight.player1;
-             const {hit, defence, value} = fight.player2 ;     
-              if(defence != hitEnemy){
-                  this.player1.changeHP(valueEnemy);
-                  this.player1.renderCH();
-                 this.generateLogs('hit', this.player2, this.player1, valueEnemy);
-              } else {
-                  this.generateLogs('defence', this.player2, this.player1);
-              }           
-              if (defenceEnemy != hit){
-                  this.player2.changeHP(value);
-                  this.player2.renderCH();        
-                  this.generateLogs('hit', this.player1, this.player2, value);
-              } 
-              else {
-                this.generateLogs('defence', this.player1, this.player2);  
-              }            
-            this.showResult();           
-    
-}   
+         const { hit: hitEnemy, defence: defenceEnemy, value: valueEnemy} = this.enemyAttack();
+         const {hit, defence, value} = this.playerAttack();     
+          if(defence != hitEnemy){
+              this.player1.changeHP(valueEnemy);
+              this.player1.renderCH();
+             this.generateLogs('hit', this.player2, this.player1, valueEnemy);
+          } else {
+              this.generateLogs('defence', this.player2, this.player1);
+          }           
+          if (defenceEnemy != hit){
+              this.player2.changeHP(value);
+              this.player2.renderCH();        
+              this.generateLogs('hit', this.player1, this.player2, value);
+          } 
+          else {
+            this.generateLogs('defence', this.player1, this.player2);  
+          }            
+        this.showResult();   
+    });  
+         
+}    
        generateLogs = (type, player1, player2, playerValue) => {
         let text;  
         let el;    
@@ -145,51 +140,33 @@ class  Game{
     $button.innerHTML = "Restart";
     $reloadButton.appendChild($button);
     this.$arenas.appendChild($reloadButton);
-    $reloadButton.addEventListener ('click', function(){
-       // window.location.reload()});
-       window.location.pathname = 'index.html'});  
-    
+    $reloadButton.addEventListener ('click', function(){   
+        switchToMainPage()});     
     };
-
-
-   enemyAttack = () => {
-    const hit = ATTACK[getRandom(3)-1];
-    const defence = ATTACK[getRandom(3)-1];
-    
-    return {
-        value: getRandom(HIT[hit]),
-        hit,
-        defence,
+    enemyAttack = () => {
+        const hit = ATTACK[getRandom(3)-1];
+        const defence = ATTACK[getRandom(3)-1];
+        
+        return {
+            value: getRandom(HIT[hit]),
+            hit,
+            defence,
+         }
      }
- }
-   async playerAttack() {
-      const attack = {};
-      for (let item of this.$formFight){ 
-    
-        if (item.checked && item.name === 'hit'){
-            attack.value = getRandom(HIT[item.value]);
-            attack.hit = item.value;
+       playerAttack=()=>{
+          const attack = {};
+          for (let item of this.$formFight){ 
+        
+            if (item.checked && item.name === 'hit'){
+                attack.value = getRandom(HIT[item.value]);
+                attack.hit = item.value;
+            }
+            if (item.checked && item.name === 'defence'){
+                 attack.defence = item.value;
+            }
+             item.checked = false;            
+          } 
+        return attack; 
         }
-        if (item.checked && item.name === 'defence'){
-             attack.defence = item.value;
-        }
-         
-          item.checked = false;            
-      } 
-      const response = await fetch('https://reactmarathon-api.herokuapp.com/api/mk/player/fight', {
-        method: 'POST',
-        body: JSON.stringify({
-            hit: attack.hit,
-            defence: attack.defence,
-            
-        })
-    }).then(res => res.json())
-    console.log(response);
-    console.log(response.player1);
-    console.log(response.player2);
-      return response;
-    
-      }
-    }   
-
-export default Game;
+    }
+ export default Game;
